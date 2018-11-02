@@ -1,28 +1,35 @@
 import javafx.css.Match;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 public class Client {
     private String name;
-    private Long personalKey, sharedA, sharedP, sharedY, ressivedY, lastZ;
+    private BigDecimal personalKey, sharedA, sharedP, sharedY, ressivedY, lastZ;
 
     Client(String name){
         this.name = name;
     }
 
     boolean recieveArgs(long p, long a) {
-        sharedP = p;
-        sharedA = a;
+        sharedP = new BigDecimal(p);
+        sharedA = new BigDecimal(a);
         return true;
     }
 
     boolean createPersoalKey() {
         Random random = new Random();
-        personalKey = Integer.toUnsignedLong(random.nextInt(Main.limitKey));
+        personalKey = new BigDecimal(0);
+        while (personalKey.equals(new BigDecimal(0))|| personalKey.equals(new BigDecimal(1))){
+            System.out.printf("PK %s", personalKey.doubleValue());
+            System.out.println();
+            personalKey = new BigDecimal(random.nextInt(Main.limitKey));
+        }
         return true;
     }
     boolean createSecondKey(){
-        sharedY = Integer.toUnsignedLong(Integer.parseInt(String.valueOf(Math.pow(sharedA, personalKey)).split("\\.")[0])) % sharedP;
+        System.out.println(name + " A^X   " + Math.pow(sharedA.doubleValue(), personalKey.doubleValue()));
+        sharedY = new BigDecimal(Math.pow(sharedA.doubleValue(), personalKey.doubleValue())% sharedP.doubleValue());
         return true;
     }
     boolean ressiveSecondKey(Client client){
@@ -30,7 +37,8 @@ public class Client {
         return true;
     }
     boolean createFinalKey(){
-        lastZ = Integer.toUnsignedLong(Integer.parseInt(String.valueOf(Math.pow(ressivedY, personalKey)).split("\\.")[0])) % sharedP;
+        System.out.println(name + " Y^X   " + Math.pow(ressivedY.doubleValue(), personalKey.doubleValue()));
+        lastZ = new BigDecimal(Math.pow(ressivedY.doubleValue(), personalKey.doubleValue())% sharedP.doubleValue());
         return true;
     }
     String status(int i){
